@@ -1,0 +1,38 @@
+# Environment Secrets
+.env
+.env.local
+.env.*
+backend/.env
+frontend/.env
+
+# Dependencies
+node_modules/
+bower_components/
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Builds
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Editor & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# AI Agents & Local Temp Directories
+.gemini/
+*.log
