@@ -33,18 +33,19 @@ def get_tasks_for_project(project_id: int, db: Session = Depends(get_db), curren
     if project.owner_id != current_user.id and not any(m.id == current_user.id for m in project.members):
         raise HTTPException(status_code=403, detail="Not authorized to view tasks of this project")
         
-    tasks = db.query(models.Task).filter(models.Task.project_id == project_id).all()
+    tasks = db.query(models.Task).filter(models.Task.project_id == project_id, models.Task.is_deleted == False).all()
     return tasks
 
 @router.get("/tasks", response_model=List[schemas.TaskResponse])
 def get_my_tasks(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     if current_user.role == models.RoleEnum.admin:
         tasks = db.query(models.Task).join(models.Project).filter(
+            models.Task.is_deleted == False,
             (models.Project.owner_id == current_user.id) | 
             (models.Project.members.any(models.User.id == current_user.id))
         ).all()
     else:
-        tasks = db.query(models.Task).filter(models.Task.assigned_to == current_user.id).all()
+        tasks = db.query(models.Task).filter(models.Task.assigned_to == current_user.id, models.Task.is_deleted == False).all()
     return tasks
 
 
@@ -87,7 +88,7 @@ def delete_task(task_id: int, db: Session = Depends(get_db), current_user: model
     if project.owner_id != current_user.id and not any(m.id == current_user.id for m in project.members):
         raise HTTPException(status_code=403, detail="Not authorized to delete tasks in this project")
         
-    db.delete(task)
+    task.is_deleted = True
     db.commit()
     return {"detail": "Task deleted successfully"}
 
