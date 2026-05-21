@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Table, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 import enum
@@ -52,6 +52,7 @@ class Task(Base):
     project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"))
     assigned_to = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     due_date = Column(DateTime, nullable=True)
+    is_deleted = Column(Boolean, default=False, nullable=False)
     
     project = relationship("Project", back_populates="tasks")
     assignee = relationship("User", back_populates="assigned_tasks")
