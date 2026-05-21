@@ -1,10 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text, inspect
 from database import engine, Base
 from routers import users, projects, tasks
 import models
 
 models.Base.metadata.create_all(bind=engine)
+
+inspector = inspect(engine)
+columns = [col["name"] for col in inspector.get_columns("tasks")]
+if "is_deleted" not in columns:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE tasks ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE"))
+        conn.commit()
 
 app = FastAPI(title="Task Manager API", redirect_slashes=False)
 
